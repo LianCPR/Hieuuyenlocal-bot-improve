@@ -251,7 +251,8 @@ function startPresenceRotation(client) {
     { name: '/rapbattle @ai_đó 🎤', type: 2 },
     { name: 'tri kỷ của mọi người 💞', type: 3 },
     { name: 'trò chuyện với mình 🤖 /chat', type: 3 },
-    { name: 'tài xỉu với mình 🎲 /taixiu', type: 3 }
+    { name: 'tài xỉu với mình 🎲 /taixiu', type: 3 },
+    { name: 'bầu cua với mình 🍈 /baucua', type: 3 }
   ];
 
   let i = 0;

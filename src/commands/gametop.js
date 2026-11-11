@@ -11,7 +11,8 @@ const GAMES = {
   all:    { emoji: '🎮', label: 'TẤT CẢ GAME' },
   taixiu: { emoji: '🎲', label: 'TÀI XỈU' },
   oanthu: { emoji: '✌️', label: 'OẲN TÙ TÌ' },
-  doanso: { emoji: '🔢', label: 'ĐOÁN SỐ' }
+  doanso: { emoji: '🔢', label: 'ĐOÁN SỐ' },
+  baucua: { emoji: '🍈', label: 'BẦU CUA' }
 };
 
 const SORTS = {
@@ -29,7 +30,8 @@ const gameTopCommand = {
           { name: '🎮 Tất cả game', value: 'all' },
           { name: '🎲 Tài Xỉu', value: 'taixiu' },
           { name: '✌️ Oẳn Tù Tì', value: 'oanthu' },
-          { name: '🔢 Đoán Số', value: 'doanso' }
+          { name: '🔢 Đoán Số', value: 'doanso' },
+          { name: '🍈 Bầu Cua', value: 'baucua' }
         )
     )
     .addStringOption(o =>
@@ -52,7 +54,7 @@ const gameTopCommand = {
       return interaction.editReply({
         embeds: [theme.warnEmbed(
           'BẢNG CÒN TRỐNG',
-          'Chưa ai chơi mini-game. Thử `/taixiu`, `/oanthu` hoặc `/doanso` để mở bảng nhé!'
+          'Chưa ai chơi mini-game. Thử `/taixiu`, `/oanthu`, `/doanso` hoặc `/baucua` để mở bảng nhé!'
         )]
       });
     }

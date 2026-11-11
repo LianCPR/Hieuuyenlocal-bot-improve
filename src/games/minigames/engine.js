@@ -1,5 +1,5 @@
 // =============================================
-// MINIGAME ENGINE — tài xỉu · oẳn tù tì · đoán số
+// MINIGAME ENGINE — tài xỉu · oẳn tù tì · đoán số · bầu cua
 // =============================================
 
 const DICE_FACES = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
@@ -13,6 +13,16 @@ const RPS = {
   bua: { label: 'BÚA', emoji: '✊', beats: 'keo' },
   bao: { label: 'BAO', emoji: '✋', beats: 'bua' }
 };
+
+const BAU_CUA = {
+  bau: { label: 'BẦU', emoji: '🍈' },
+  cua: { label: 'CUA', emoji: '🦀' },
+  tom: { label: 'TÔM', emoji: '🦐' },
+  ca: { label: 'CÁ', emoji: '🐟' },
+  ga: { label: 'GÀ', emoji: '🐓' },
+  nai: { label: 'NAI', emoji: '🦌' }
+};
+const BAU_CUA_KEYS = Object.keys(BAU_CUA);
 
 /** Tài Xỉu: tổng 11–18 là Tài, 4–10 là Xỉu. Bão (3 mặt giống nhau) nhà cái thắng. */
 function playTaiXiu(choice = 'tai') {
@@ -48,13 +58,23 @@ function playGuess(choice = 1) {
   return { choice: pick, bot, win: bot === pick };
 }
 
+/** Bầu Cua: 3 xúc xắc 6 linh vật; trúng 1–3 lần ăn theo số lần xuất hiện. */
+function playBauCua(choice = 'bau') {
+  const pick = BAU_CUA[choice] ? choice : 'bau';
+  const dice = Array.from({ length: 3 }, () => BAU_CUA_KEYS[Math.floor(Math.random() * BAU_CUA_KEYS.length)]);
+  const hits = dice.filter(die => die === pick).length;
+  return { choice: pick, dice, hits, win: hits > 0 };
+}
+
 module.exports = {
   DICE_FACES,
   RPS,
+  BAU_CUA,
   rollDie,
   rollDice,
   diceFace,
   playTaiXiu,
   playRPS,
-  playGuess
+  playGuess,
+  playBauCua
 };

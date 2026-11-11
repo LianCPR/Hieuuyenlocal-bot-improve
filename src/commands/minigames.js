@@ -1,8 +1,8 @@
 // =============================================
-// MINIGAMES — tài xỉu · oẳn tù tì · đoán số
+// MINIGAMES — tài xỉu · oẳn tù tì · đoán số · bầu cua
 // =============================================
 
-const { SlashCommandBuilder, MessageFlags } = require('discord.js');
+const { SlashCommandBuilder, MessageFlags, AttachmentBuilder } = require('discord.js');
 const theme = require('../ui/theme');
 const { C, fmtNum } = theme;
 const {
@@ -11,6 +11,11 @@ const {
 const mini = require('../database/models/minigames');
 const { checkAllAchievements } = require('../database/models/achievements');
 const engine = require('../games/minigames/engine');
+const { generateBaucuaCard, BAU_CUA_CARD_FILE } = require('../canvas/baucuaCard');
+const {
+  generateTaiXiuCard, generateRPSSCard, generateGuessCard,
+  TAIXIU_CARD_FILE, RPS_CARD_FILE, GUESS_CARD_FILE
+} = require('../canvas/minigameCards');
 
 const EPH = { flags: MessageFlags.Ephemeral };
 const MIN_BET = 10;
@@ -49,7 +54,7 @@ function cooldownReply(interaction, left) {
 
 async function finish(interaction, {
   game, bet, net, win, tie = false,
-  title, color, lines
+  title, color, lines, cardBuilder = null
 }) {
   const userId = interaction.user.id;
 
@@ -95,7 +100,24 @@ async function finish(interaction, {
     ].filter(Boolean).join('\n')
   });
 
-  await interaction.reply({ embeds: [embed] });
+  let files = [];
+  if (cardBuilder) {
+    try {
+      const card = await cardBuilder({ bet, net, win, tie, stats, balance, newAchievements });
+      if (card?.buffer) {
+        const name = card.name || BAU_CUA_CARD_FILE;
+        embed.setImage(`attachment://${name}`);
+        files = [new AttachmentBuilder(card.buffer, { name })];
+      }
+    } catch (err) {
+      console.error('minigame card error:', err);
+    }
+  }
+
+  await interaction.reply({
+    embeds: [embed],
+    ...(files.length ? { files } : {})
+  });
 }
 
 // ── TÀI XỈU ───────────────────────────────────
@@ -146,7 +168,22 @@ const taiXiuCommand = {
         `**Tổng:** **${r.total}** → **${r.outcome === 'tai' ? 'TÀI' : 'XỈU'}**${r.triple ? ' · BÃO 3 MẶT' : ''}`,
         theme.field('Bạn chọn', `**${choice === 'tai' ? 'TÀI' : 'XỈU'}**`),
         r.triple ? '> Bão 3 mặt: nhà cái thắng theo luật.' : ''
-      ]
+      ],
+      cardBuilder: ({ bet: finalBet, net: finalNet, win: finalWin, stats, balance }) => ({
+        name: TAIXIU_CARD_FILE,
+        buffer: generateTaiXiuCard({
+          dice: r.dice,
+          choice,
+          total: r.total,
+          triple: r.triple,
+          outcome: r.outcome,
+          bet: finalBet,
+          net: finalNet,
+          win: finalWin,
+          balance,
+          stats
+        })
+      })
     });
   }
 };
@@ -201,7 +238,20 @@ const oanTuTiCommand = {
         `**Bạn ra:** ${mine.emoji} **${mine.label}**`,
         `**Bot ra:** ${theirs.emoji} **${theirs.label}**`,
         theme.field('Kết quả', r.tie ? 'Hoà' : r.win ? 'Bạn thắng' : 'Bot thắng')
-      ]
+      ],
+      cardBuilder: ({ bet: finalBet, net: finalNet, win: finalWin, tie: finalTie, stats, balance }) => ({
+        name: RPS_CARD_FILE,
+        buffer: generateRPSSCard({
+          player: choice,
+          bot: r.bot,
+          bet: finalBet,
+          net: finalNet,
+          win: finalWin,
+          tie: finalTie,
+          balance,
+          stats
+        })
+      })
     });
   }
 };
@@ -250,9 +300,103 @@ const doanSoCommand = {
         `**Bạn đoán:** **${r.choice}**`,
         `**Bot ra:** **${r.bot}**`,
         theme.field('Kết quả', r.win ? 'Trúng · lời x3 tiền cược' : 'Trượt')
-      ]
+      ],
+      cardBuilder: ({ bet: finalBet, net: finalNet, win: finalWin, stats, balance }) => ({
+        name: GUESS_CARD_FILE,
+        buffer: generateGuessCard({
+          choice,
+          bot: r.bot,
+          bet: finalBet,
+          net: finalNet,
+          win: finalWin,
+          balance,
+          stats
+        })
+      })
     });
   }
 };
 
-module.exports = [taiXiuCommand, oanTuTiCommand, doanSoCommand];
+// ── BẦU CUA ───────────────────────────────────
+const bauCuaCommand = {
+  data: new SlashCommandBuilder()
+    .setName('baucua')
+    .setDescription('🍈 Bầu Cua 3 xúc xắc — trúng 1–3 lần, ăn theo số lần')
+    .addIntegerOption(o => o
+      .setName('cuoc')
+      .setDescription(`Số coin cược (${MIN_BET}–${MAX_BET})`)
+      .setRequired(true)
+      .setMinValue(MIN_BET)
+      .setMaxValue(MAX_BET))
+    .addStringOption(o => o
+      .setName('chon')
+      .setDescription('Chọn linh vật bạn muốn cược')
+      .setRequired(true)
+      .addChoices(
+        { name: '🍈 Bầu', value: 'bau' },
+        { name: '🦀 Cua', value: 'cua' },
+        { name: '🦐 Tôm', value: 'tom' },
+        { name: '🐟 Cá', value: 'ca' },
+        { name: '🐓 Gà', value: 'ga' },
+        { name: '🦌 Nai', value: 'nai' }
+      )),
+
+  async execute(interaction) {
+    const left = cooldownLeft(interaction.user.id);
+    if (left) return cooldownReply(interaction, left);
+
+    const bet = interaction.options.getInteger('cuoc', true);
+    const choice = interaction.options.getString('chon', true);
+    const check = validate(interaction, bet);
+    if (check.error) {
+      return interaction.reply({ embeds: [theme.errorEmbed('KHÔNG CƯỢC ĐƯỢC', check.error)], ...EPH });
+    }
+
+    lastPlay.set(interaction.user.id, Date.now());
+    const r = engine.playBauCua(choice);
+    const net = r.hits > 0 ? bet * r.hits : -bet;
+    const pick = engine.BAU_CUA[r.choice];
+    const dice = r.dice.map(key => {
+      const item = engine.BAU_CUA[key];
+      return `${item.emoji} ${item.label}`;
+    }).join('  ·  ');
+
+    await finish(interaction, {
+      game: 'baucua',
+      bet,
+      net,
+      win: r.win,
+      title: r.hits === 3
+        ? '🍈 BẦU CUA // NỔ 3'
+        : r.hits === 2
+          ? '🍈 BẦU CUA // TRÚNG 2'
+          : r.hits === 1
+            ? '🍈 BẦU CUA // TRÚNG 1'
+            : '🍈 BẦU CUA // TRƯỢT',
+      color: r.win ? C.lime : C.blood,
+      lines: [
+        `**Xúc xắc:** ${dice}`,
+        `**Bạn chọn:** ${pick.emoji} **${pick.label}**`,
+        theme.field('Số lần xuất hiện', `**${r.hits}/3**`),
+        r.hits
+          ? `> Trúng **${r.hits}** lần · tỉ lệ thưởng **1:${r.hits}**`
+          : '> Linh vật bạn chọn không xuất hiện.'
+      ],
+      cardBuilder: ({ bet: finalBet, net: finalNet, win: finalWin, stats, balance }) => ({
+        name: BAU_CUA_CARD_FILE,
+        buffer: generateBaucuaCard({
+          dice: r.dice,
+          choice: r.choice,
+          hits: r.hits,
+          bet: finalBet,
+          net: finalNet,
+          balance,
+          stats,
+          win: finalWin
+        })
+      })
+    });
+  }
+};
+
+module.exports = [taiXiuCommand, oanTuTiCommand, doanSoCommand, bauCuaCommand];

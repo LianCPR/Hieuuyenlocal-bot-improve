@@ -283,7 +283,9 @@ const HELP_PAGES = {
       '`/taixiu <cược> <tài|xỉu>` — tài xỉu 3 xúc xắc, thắng 1:1',
       '`/oanthu <cược> <kéo|búa|bao>` — oẳn tù tì, hoà hoàn cược',
       '`/doanso <cược> <1-6>` — đoán số, trúng lời x3',
+      '`/baucua <cược> <bầu|cua|tôm|cá|gà|nai>` — bầu cua 3 xúc xắc, trúng 1–3 lần ăn theo số lần · card kết quả',
       '`/gametop [game] [sort]` — bảng xếp hạng mini-game theo thắng hoặc lãi',
+      '**CARD KẾT QUẢ** · Tài Xỉu, Oẳn Tù Tì, Đoán Số và Bầu Cua đều có poster riêng',
       '`/gacha pull [số lượng]` — quay thẻ anime (120 coin/lượt)',
       '`/gacha collection [user]` — bộ sưu tập thẻ',
       '`/gacha info` — tỉ lệ, bảo hiểm, top collector',
@@ -314,7 +316,7 @@ const HELP_TABS = [
   { value: 'social', label: 'Social', emoji: '💞', description: 'Tri kỷ, ship, rap battle', accent: C.hot, poster: 'SOCIAL', tagline: 'kết nối & battle', chips: ['SOCIAL', 'SHIP', 'RAP'] },
   { value: 'quests', label: 'Daily Quest', emoji: '📋', description: 'Nhiệm vụ hằng ngày', accent: C.lime, poster: 'DAILY QUEST', tagline: 'mỗi ngày ba việc nhỏ', chips: ['DAILY', 'CLAIM', 'STREAK'] },
   { value: 'ai', label: 'AI Chat', emoji: '🤖', description: 'Trò chuyện AI thật', accent: C.neon, poster: 'AI COMPANION', tagline: 'trò chuyện thật, nhớ ngữ cảnh', chips: ['CHAT', 'CONTEXT', 'LIMIT'] },
-  { value: 'games', label: 'Games', emoji: '🎮', description: 'Ma sói, quiz, gacha, mini-game', accent: C.orange, poster: 'GAME ZONE', tagline: 'chơi là có thưởng', chips: ['GACHA', 'QUIZ', 'MINI-GAME'] },
+  { value: 'games', label: 'Games', emoji: '🎮', description: 'Ma sói, quiz, gacha, bầu cua', accent: C.orange, poster: 'GAME ZONE', tagline: 'chơi là có thưởng', chips: ['GACHA', 'QUIZ', 'BẦU CUA'] },
   { value: 'life', label: 'Life & Admin', emoji: '💧', description: 'Health, sticker, setup', accent: C.mint, poster: 'LIFE & ADMIN', tagline: 'chăm sóc bản thân & server', chips: ['WATER', 'STICKER', 'SETUP'] }
 ];
 

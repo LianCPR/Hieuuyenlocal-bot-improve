@@ -23,7 +23,7 @@ Bản này là một lần lột xác toàn diện, không chỉ đổi màu emb
 | 🖼️ Sticker | Không có | Biến avatar thành **sticker poster** cá nhân |
 | 📊 Server check | Không có | **Ảnh tổng quan server** + top crew |
 | 💰 Daily | Cố định | **Streak 7/30 ngày**, bonus coin theo chuỗi |
-| 🧩 Lệnh | 10 lệnh, 2 lệnh bị "mồ côi" | **26 lệnh**, tự động load, không còn lệnh bị bỏ quên |
+| 🧩 Lệnh | 10 lệnh, 2 lệnh bị "mồ côi" | **27 lệnh**, tự động load, không còn lệnh bị bỏ quên |
 | 🌐 Dashboard | Tím pastel | **Poster UI**: marquee, sticker, chart, gacha collectors, live clock |
 | 🛠️ Độ ổn định | Lỗi `datetime("now")` trên SQLite mới | Đã sửa, có migration cột, fallback canvas engine |
 
@@ -40,7 +40,8 @@ Bản này là một lần lột xác toàn diện, không chỉ đổi màu emb
 ### 💰 Economy
 - **Daily streak** — điểm danh mỗi ngày; streak càng dài bonus càng cao (tối đa +105 coin/ngày).
 - **AI chat thật** — `/chat` hoặc mention bot; AI trả lời tiếng Việt, nhớ 12 tin gần nhất, có rate limit và reset ngữ cảnh.
-- **3 mini-game mới** — Tài Xỉu, Oẳn Tù Tì, Đoán Số có cược coin và thống kê lãi/lỗ.
+- **4 mini-game cược coin** — Tài Xỉu, Oẳn Tù Tì, Đoán Số, Bầu Cua; có thống kê lãi/lỗ.
+- **Card mini-game** — poster kết quả 1200×630 cho Bầu Cua, Tài Xỉu, Oẳn Tù Tì và Đoán Số.
 - **Nhiệm vụ hằng ngày** — 3 quest/ngày (chat, daily, quiz, gacha, nước, ship, rap), poster riêng, nhận thưởng bằng nút.
 - **Shop UI** — mua bằng select menu, xem túi đồ, trang bị bằng menu.
 - **19 vật phẩm** — theme, viền, huy hiệu, màu tên với 5 độ hiếm.
@@ -69,7 +70,7 @@ Bản này là một lần lột xác toàn diện, không chỉ đổi màu emb
 
 ---
 
-## ✦ Danh sách lệnh (26)
+## ✦ Danh sách lệnh (27)
 
 ### Core
 | Lệnh | Mô tả |
@@ -81,6 +82,7 @@ Bản này là một lần lột xác toàn diện, không chỉ đổi màu emb
 | `/taixiu <cược> <tài\|xỉu>` | Tài Xỉu 3 xúc xắc, thắng 1:1 |
 | `/oanthu <cược> <kéo\|búa\|bao>` | Oẳn Tù Tì với bot, hoà hoàn cược |
 | `/doanso <cược> <1-6>` | Đoán số, trúng lời x3 tiền cược |
+| `/baucua <cược> <linh_vật>` | Bầu Cua 3 xúc xắc, trúng 1–3 lần ăn theo số lần |
 | `/gametop [game] [sort]` | BXH mini-game theo số thắng hoặc lãi ròng |
 | `/info [user]` | Thông tin Discord + dữ liệu bot |
 | `/chat send\|reset\|status` | Trò chuyện với AI thật, reset ngữ cảnh, xem trạng thái |
@@ -247,7 +249,7 @@ src/
 │  ├─ economy.js                daily, shop
 │  ├─ quests.js                 /nhiemvu + nút nhận thưởng
 │  ├─ ai.js                     /chat + mention AI
-│  ├─ minigames.js              /taixiu /oanthu /doanso
+│  ├─ minigames.js              /taixiu /oanthu /doanso /baucua
 │  ├─ info.js                   /info
 │  ├─ social.js                 tri kỷ, ship, rap battle, raptop
 │  ├─ games.js                  ma sói, quiz, gacha

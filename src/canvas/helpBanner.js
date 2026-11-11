@@ -212,7 +212,7 @@ async function render(meta = {}) {
   // ── bottom tape ──
   art.tape(ctx, {
     x: -8, y: H - 34, w: W + 16, h: 28,
-    text: 'HIỂU UYÊN · COMMAND DECK · 26 COMMANDS · NO SKIP',
+    text: 'HIỂU UYÊN · COMMAND DECK · 27 COMMANDS · NO SKIP',
     fill: accent, color: HEX.ink, size: 11, rotate: -0.004
   });
 
