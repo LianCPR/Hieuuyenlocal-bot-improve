@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+
+# Secrets / local environment
+.env
+.env.*
+!.env.example
+
+# Local data, SQLite databases and sidecar files
+data/
+*.db
+*.db-shm
+*.db-wal
+
+# Logs and build output
+*.log
+dist/
+coverage/
+
+# Freebuff local metadata
+.freebuff/
+
+# OS clutter
+.DS_Store
+Thumbs.db

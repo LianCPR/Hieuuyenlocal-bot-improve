@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>HIỂU UYÊN · anime genZ hiphop era</title>
+<meta name="description" content="Dashboard của Hiểu Uyên — bot Discord tri kỷ, anime genZ hiphop edition." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  /* ── TOKENS ─────────────────────────────────── */
+  :root {
+    --ink:        #07060C;
+    --ink-2:      #0C0916;
+    --ink-3:      #120E1F;
+    --hot:        #FF2D95;
+    --neon:       #A855F7;
+    --cyber:      #22D3EE;
+    --gold:       #FACC15;
+    --lime:       #BEF264;
+    --text:       #F6F4FF;
+    --muted:      rgba(246,244,255,.52);
+    --line:       rgba(255,255,255,.09);
+    --panel:      rgba(255,255,255,.04);
+    --display:    'Bebas Neue', Impact, sans-serif;
+    --body:       'Be Vietnam Pro', system-ui, sans-serif;
+    --mono:       'Space Grotesk', ui-monospace, monospace;
+    --r:          18px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--body);
+    background: var(--ink);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+  button { font-family: inherit; }
+
+  /* ── BACKGROUND ─────────────────────────────── */
+  .bg {
+    position: fixed; inset: 0; z-index: -3;
+    background:
+      radial-gradient(900px 600px at 12% -5%, rgba(255,45,149,.22), transparent 65%),
+      radial-gradient(800px 700px at 92% 10%, rgba(168,85,247,.20), transparent 65%),
+      radial-gradient(700px 500px at 50% 110%, rgba(34,211,238,.14), transparent 65%),
+      linear-gradient(180deg, #0B0814 0%, #07060C 55%, #050409 100%);
+  }
+  .bg::after {
+    content: ''; position: absolute; inset: 0;
+    background-image: radial-gradient(rgba(255,255,255,.16) 1px, transparent 1px);
+    background-size: 22px 22px;
+    opacity: .16;
+    mask-image: radial-gradient(circle at 50% 20%, #000 0%, transparent 78%);
+  }
+  .grain {
+    position: fixed; inset: 0; z-index: -2; pointer-events: none; opacity: .055;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/></filter><rect width='140' height='140' filter='url(%23n)'/></svg>");
+  }
+  .scanlines {
+    position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: .25;
+    background: repeating-linear-gradient(0deg, rgba(255,255,255,.03) 0 1px, transparent 1px 4px);
+    mix-blend-mode: overlay;
+  }
+  .orb {
+    position: fixed; border-radius: 50%; filter: blur(90px);
+    pointer-events: none; z-index: -2; opacity: .3;
+    animation: float 16s ease-in-out infinite;
+  }
+  .orb-1 { width: 420px; height: 420px; background: var(--hot); top: -140px; left: -120px; }
+  .orb-2 { width: 360px; height: 360px; background: var(--neon); top: 30%; right: -160px; animation-delay: -6s; }
+  .orb-3 { width: 300px; height: 300px; background: var(--cyber); bottom: -120px; left: 40%; animation-delay: -11s; opacity: .18; }
+  @keyframes float {
+    0%,100% { transform: translate3d(0,0,0) scale(1); }
+    50% { transform: translate3d(24px,-30px,0) scale(1.08); }
+  }
+
+  /* ── MARQUEE ────────────────────────────────── */
+  .marquee {
+    background: var(--hot);
+    color: #0B0812;
+    overflow: hidden;
+    border-bottom: 2px solid #0B0812;
+    position: relative;
+    z-index: 30;
+  }
+  .marquee-track {
+    display: flex; gap: 2.5rem; white-space: nowrap;
+    padding: .42rem 0;
+    font-family: var(--mono); font-weight: 700; font-size: .72rem;
+    letter-spacing: .16em; text-transform: uppercase;
+    animation: slide 26s linear infinite;
+    width: max-content;
+  }
+  .marquee-track span::before { content: '//'; margin-right: .8rem; opacity: .55; }
+  @keyframes slide { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  /* ── NAV ────────────────────────────────────── */
+  .nav {
+    position: sticky; top: 0; z-index: 40;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 1rem; padding: .8rem clamp(1rem, 4vw, 2.6rem);
+    background: rgba(7,6,12,.72);
+    backdrop-filter: blur(22px) saturate(140%);
+    border-bottom: 1px solid var(--line);
+  }
+  .brand { display: flex; align-items: center; gap: .7rem; }
+  .brand-logo {
+    width: 42px; height: 42px; border-radius: 12px;
+    display: grid; place-items: center;
+    background: linear-gradient(135deg, var(--hot), var(--neon));
+    box-shadow: 0 0 22px rgba(255,45,149,.45);
+    transform: rotate(-6deg);
+    font-size: 1.1rem;
+  }
+  .brand-name {
+    font-family: var(--display); font-size: 1.7rem; letter-spacing: .06em;
+    line-height: .9;
+  }
+  .brand-name em { font-style: normal; color: var(--hot); }
+  .brand-sub {
+    font-family: var(--mono); font-size: .58rem; letter-spacing: .22em;
+    color: var(--muted); text-transform: uppercase; margin-top: .2rem;
+  }
+  .nav-links { display: flex; gap: .25rem; }
+  .nav-links a {
+    font-size: .78rem; font-weight: 600; letter-spacing: .04em;
+    padding: .5rem .85rem; border-radius: 10px; color: var(--muted);
+    border: 1px solid transparent; transition: .2s;
+  }
+  .nav-links a:hover, .nav-links a.active {
+    color: var(--text); background: rgba(255,45,149,.12);
+    border-color: rgba(255,45,149,.35);
+  }
+  .live {
+    display: inline-flex; align-items: center; gap: .45rem;
+    font-family: var(--mono); font-size: .66rem; font-weight: 700;
+    letter-spacing: .14em; text-transform: uppercase;
+    padding: .42rem .8rem; border-radius: 999px;
+    background: rgba(190,242,100,.1); color: var(--lime);
+    border: 1px solid rgba(190,242,100,.3);
+  }
+  .live i {
+    width: 7px; height: 7px; border-radius: 50%; background: var(--lime);
+    box-shadow: 0 0 0 0 rgba(190,242,100,.6);
+    animation: ping 2s infinite;
+  }
+  @keyframes ping {
+    0% { box-shadow: 0 0 0 0 rgba(190,242,100,.55); }
+    70% { box-shadow: 0 0 0 8px rgba(190,242,100,0); }
+    100% { box-shadow: 0 0 0 0 rgba(190,242,100,0); }
+  }
+
+  /* ── LAYOUT ─────────────────────────────────── */
+  main { width: min(1180px, 100%); margin: 0 auto; padding: 0 clamp(1rem, 4vw, 2rem) 4rem; }
+  section { padding-top: 3.5rem; }
+  .section-head {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    gap: 1rem; flex-wrap: wrap; margin-bottom: 1.3rem;
+  }
+  .section-title {
+    font-family: var(--display); font-size: clamp(2rem, 4vw, 2.9rem);
+    letter-spacing: .03em; line-height: .95;
+  }
+  .section-title span { color: var(--hot); }
+  .section-tag {
+    font-family: var(--mono); font-size: .64rem; letter-spacing: .18em;
+    text-transform: uppercase; color: var(--muted);
+    padding: .35rem .7rem; border: 1px solid var(--line); border-radius: 8px;
+    background: var(--panel);
+  }
+
+  /* ── HERO ───────────────────────────────────── */
+  .hero {
+    display: grid; grid-template-columns: 1.15fr .85fr;
+    gap: 2rem; align-items: center;
+    padding-top: clamp(2.4rem, 6vw, 4.5rem);
+  }
+  .chip {
+    display: inline-flex; align-items: center; gap: .5rem;
+    font-family: var(--mono); font-size: .66rem; font-weight: 700;
+    letter-spacing: .2em; text-transform: uppercase;
+    color: var(--cyber); background: rgba(34,211,238,.08);
+    border: 1px solid rgba(34,211,238,.3);
+    padding: .4rem .85rem; border-radius: 999px;
+    transform: rotate(-1.5deg);
+  }
+  .hero h1 {
+    font-family: var(--display); font-weight: 400;
+    font-size: clamp(4.4rem, 12vw, 8.6rem);
+    line-height: .78; letter-spacing: .01em;
+    margin: 1rem 0 .2rem;
+    display: flex; flex-direction: column;
+    position: relative;
+  }
+  .hero h1 .l1 { color: #fff; }
+  .hero h1 .l2 {
+    background: linear-gradient(100deg, var(--hot), var(--neon) 55%, var(--cyber));
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 26px rgba(255,45,149,.35));
+  }
+  .hero h1::after {
+    content: 'ERA'; position: absolute; right: 0; top: 12%;
+    font-size: .18em; color: var(--gold); letter-spacing: .3em;
+    transform: rotate(90deg); transform-origin: right top;
+    font-family: var(--mono); font-weight: 700;
+  }
+  .hero p.lead {
+    max-width: 46ch; color: var(--muted); font-size: .96rem; line-height: 1.75;
+    margin-top: 1.1rem;
+  }
+  .hero p.lead b { color: var(--text); }
+  .hero-actions { display: flex; gap: .7rem; flex-wrap: wrap; margin-top: 1.6rem; }
+  .btn {
+    display: inline-flex; align-items: center; gap: .5rem;
+    padding: .75rem 1.25rem; border-radius: 12px;
+    font-size: .82rem; font-weight: 700; letter-spacing: .02em;
+    border: 1px solid transparent; cursor: pointer;
+    transition: transform .18s, box-shadow .18s, background .18s;
+  }
+  .btn-primary {
+    background: linear-gradient(120deg, var(--hot), var(--neon));
+    color: #fff; box-shadow: 0 10px 28px rgba(255,45,149,.28);
+  }
+  .btn-primary:hover { transform: translateY(-2px) rotate(-1deg); box-shadow: 0 14px 34px rgba(255,45,149,.4); }
+  .btn-ghost { background: var(--panel); border-color: var(--line); color: var(--text); }
+  .btn-ghost:hover { border-color: rgba(34,211,238,.45); color: var(--cyber); transform: translateY(-2px); }
+
+  .sticker-row { display: flex; gap: .6rem; flex-wrap: wrap; margin-top: 1.8rem; }
+  .sticker {
+    font-family: var(--mono); font-size: .62rem; font-weight: 700;
+    letter-spacing: .12em; text-transform: uppercase;
+    padding: .36rem .7rem; border-radius: 7px;
+    border: 2px solid #0B0812;
+    box-shadow: 0 6px 18px rgba(0,0,0,.35);
+  }
+  .s-hot  { background: var(--hot);  color: #0B0812; transform: rotate(-3deg); }
+  .s-cyber{ background: var(--cyber); color: #0B0812; transform: rotate(2deg); }
+  .s-gold { background: var(--gold);  color: #0B0812; transform: rotate(-1deg); }
+  .s-neon { background: var(--neon);  color: #fff;     transform: rotate(3deg); }
+
+  /* hero panel */
+  .panel {
+    position: relative; border: 1px solid var(--line); border-radius: var(--r);
+    background: linear-gradient(160deg, rgba(255,255,255,.06), rgba(255,255,255,.015));
+    padding: 1.4rem; overflow: hidden;
+    box-shadow: 0 24px 60px rgba(0,0,0,.45);
+    transform: rotate(1.2deg);
+  }
+  .panel::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(300px 160px at 85% -10%, rgba(255,45,149,.35), transparent 70%);
+    pointer-events: none;
+  }
+  .panel-top {
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: var(--mono); font-size: .6rem; letter-spacing: .2em;
+    text-transform: uppercase; color: var(--muted);
+  }
+  .panel-top b { color: var(--cyber); }
+  .big-level {
+    font-family: var(--display); font-size: 5.6rem; line-height: .85;
+    margin: .6rem 0 .1rem;
+    background: linear-gradient(120deg, #fff, var(--neon));
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .big-level small {
+    font-family: var(--mono); font-size: .8rem; color: var(--muted);
+    -webkit-text-fill-color: var(--muted); letter-spacing: .1em;
+  }
+  .panel-label { font-family: var(--mono); font-size: .6rem; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); }
+  .panel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .7rem; margin-top: 1rem; }
+  .mini {
+    border: 1px solid var(--line); border-radius: 12px; background: rgba(7,6,12,.45);
+    padding: .7rem .8rem;
+  }
+  .mini b { display: block; font-family: var(--display); font-size: 1.6rem; letter-spacing: .03em; }
+  .mini span { font-family: var(--mono); font-size: .56rem; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+  .panel-bar { height: 8px; border-radius: 99px; background: rgba(255,255,255,.1); overflow: hidden; margin-top: 1rem; }
+  .panel-bar i {
+    display: block; height: 100%; width: 0%;
+    background: linear-gradient(90deg, var(--hot), var(--cyber));
+    border-radius: 99px; transition: width 1s cubic-bezier(.2,1,.3,1);
+  }
+  .panel-note {
+    font-family: var(--mono); font-size: .58rem; letter-spacing: .08em;
+    color: var(--muted); margin-top: .55rem;
+  }
+
+  /* ── STATS ──────────────────────────────────── */
+  .stats {
+    display: grid; grid-template-columns: repeat(5, 1fr);
+    gap: .8rem; padding-top: 3rem;
+  }
+  .stat {
+    position: relative; border: 1px solid var(--line); border-radius: 14px;
+    background: var(--panel); padding: 1rem 1.05rem;
+    overflow: hidden; transition: .22s;
+  }
+  .stat::before {
+    content: ''; position: absolute; left: 0; top: 0; width: 3px; height: 100%;
+    background: var(--accent, var(--hot)); opacity: .85;
+  }
+  .stat:hover { transform: translateY(-4px); border-color: rgba(255,255,255,.2); background: rgba(255,255,255,.06); }
+  .stat .k { font-family: var(--mono); font-size: .56rem; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); }
+  .stat .v { font-family: var(--display); font-size: 2.1rem; line-height: 1.05; margin-top: .25rem; }
+  .stat .s { font-size: .66rem; color: var(--muted); margin-top: .1rem; }
+
+  /* ── CARDS / LISTS ──────────────────────────── */
+  .tabs { display: flex; gap: .45rem; flex-wrap: wrap; margin-bottom: 1rem; }
+  .tab {
+    font-family: var(--mono); font-size: .68rem; letter-spacing: .08em;
+    padding: .5rem .9rem; border-radius: 9px; cursor: pointer;
+    background: var(--panel); color: var(--muted);
+    border: 1px solid var(--line); transition: .18s;
+  }
+  .tab:hover { color: var(--text); border-color: rgba(255,45,149,.4); }
+  .tab.on {
+    background: rgba(255,45,149,.14); color: var(--hot);
+    border-color: rgba(255,45,149,.55);
+    box-shadow: inset 0 0 18px rgba(255,45,149,.12);
+  }
+
+  .rows { display: flex; flex-direction: column; gap: .5rem; }
+  .row {
+    display: grid; grid-template-columns: 64px 1fr auto;
+    align-items: center; gap: 1rem;
+    padding: .8rem 1.1rem;
+    border: 1px solid var(--line); border-radius: 13px;
+    background: var(--panel);
+    transition: .18s; position: relative; overflow: hidden;
+  }
+  .row:hover { transform: translateX(4px); border-color: rgba(255,45,149,.35); background: rgba(255,45,149,.05); }
+  .row.top1 { border-color: rgba(250,204,21,.5); background: rgba(250,204,21,.06); }
+  .row.top2 { border-color: rgba(203,213,225,.35); }
+  .row.top3 { border-color: rgba(224,138,75,.4); }
+  .rank {
+    font-family: var(--display); font-size: 1.9rem; line-height: 1;
+    color: var(--muted); letter-spacing: .04em;
+  }
+  .row.top1 .rank { color: var(--gold); }
+  .who { display: flex; align-items: center; gap: .7rem; min-width: 0; }
+  .ava {
+    width: 38px; height: 38px; border-radius: 11px; flex: none;
+    display: grid; place-items: center;
+    font-family: var(--display); font-size: 1.1rem;
+    color: #0B0812; background: linear-gradient(135deg, var(--hot), var(--neon));
+    border: 2px solid rgba(255,255,255,.15);
+  }
+  .who .n { font-weight: 700; font-size: .9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .who .t { font-family: var(--mono); font-size: .6rem; letter-spacing: .06em; color: var(--hot); margin-top: .12rem; }
+  .val { text-align: right; }
+  .val b { display: block; font-family: var(--display); font-size: 1.4rem; letter-spacing: .04em; }
+  .val span { font-family: var(--mono); font-size: .56rem; letter-spacing: .12em; color: var(--muted); text-transform: uppercase; }
+  .mini-bar { height: 5px; border-radius: 99px; background: rgba(255,255,255,.09); overflow: hidden; margin-top: .35rem; width: 160px; margin-left: auto; }
+  .mini-bar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--hot), var(--cyber)); transition: width .8s ease; }
+
+  /* ── GACHA GRID ─────────────────────────────── */
+  .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: .8rem; }
+  .gcard {
+    position: relative; border: 1px solid var(--line); border-radius: 15px;
+    padding: 1rem; background: linear-gradient(160deg, rgba(255,255,255,.055), rgba(255,255,255,.012));
+    overflow: hidden; transition: .22s;
+  }
+  .gcard::after {
+    content: ''; position: absolute; inset: -40% -10% auto; height: 120%;
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,.12), transparent);
+    transform: rotate(12deg); opacity: 0; transition: .3s;
+  }
+  .gcard:hover { transform: translateY(-4px) rotate(-.6deg); border-color: rgba(168,85,247,.5); }
+  .gcard:hover::after { opacity: 1; }
+  .gcard .top { display: flex; justify-content: space-between; align-items: center; }
+  .gcard .idx { font-family: var(--mono); font-size: .58rem; color: var(--muted); letter-spacing: .16em; }
+  .gcard .rarepill {
+    font-family: var(--mono); font-size: .54rem; font-weight: 700; letter-spacing: .1em;
+    padding: .18rem .45rem; border-radius: 5px; background: rgba(250,204,21,.14);
+    color: var(--gold); border: 1px solid rgba(250,204,21,.35);
+  }
+  .gcard .name { font-weight: 700; margin: .65rem 0 .15rem; font-size: .92rem; }
+  .gcard .sub { font-size: .66rem; color: var(--muted); }
+  .gcard .count { font-family: var(--display); font-size: 2.4rem; line-height: 1; margin-top: .7rem; }
+  .gcard .count small { font-family: var(--mono); font-size: .55rem; color: var(--muted); letter-spacing: .12em; }
+  .gcard .mini-bar { width: 100%; margin-left: 0; margin-top: .5rem; }
+
+  /* ── RELATIONSHIPS ──────────────────────────── */
+  .rel-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: .8rem; }
+  .rel {
+    border: 1px solid var(--line); border-radius: 15px; padding: 1.1rem;
+    background: var(--panel); transition: .22s;
+  }
+  .rel:hover { transform: translateY(-3px); border-color: rgba(255,45,149,.4); box-shadow: 0 16px 34px rgba(255,45,149,.1); }
+  .rel-top { display: flex; align-items: center; gap: .5rem; }
+  .rel-ava {
+    width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center;
+    font-family: var(--display); font-size: 1rem; color: #0B0812;
+    background: linear-gradient(135deg, var(--neon), var(--cyber));
+  }
+  .rel-heart { color: var(--hot); font-size: .95rem; animation: beat 1.6s ease-in-out infinite; }
+  @keyframes beat { 0%,100% { transform: scale(1); } 45% { transform: scale(1.25); } }
+  .rel-names { font-weight: 700; font-size: .8rem; margin-left: .2rem; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .rel-pts { font-family: var(--display); font-size: 1.9rem; line-height: 1; margin: .9rem 0 .1rem; color: var(--hot); }
+  .rel-pts small { font-family: var(--mono); font-size: .55rem; letter-spacing: .12em; color: var(--muted); text-transform: uppercase; }
+  .rel-level { font-size: .66rem; color: var(--muted); }
+  .rel .mini-bar { width: 100%; margin-left: 0; margin-top: .6rem; }
+  .rel .mini-bar i { background: linear-gradient(90deg, var(--hot), var(--neon)); }
+
+  /* ── DIARY ──────────────────────────────────── */
+  .diary-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: .8rem; }
+  .post {
+    position: relative; border: 1px solid var(--line); border-radius: 15px;
+    padding: 1.1rem 1.1rem 1rem; background: var(--panel);
+    transition: .22s;
+  }
+  .post:hover { border-color: rgba(34,211,238,.4); transform: translateY(-3px); }
+  .post::before {
+    content: '“'; position: absolute; top: -.1rem; right: .8rem;
+    font-family: var(--display); font-size: 3.2rem; color: rgba(255,45,149,.4);
+  }
+  .post-head { display: flex; align-items: center; gap: .45rem; font-family: var(--mono); font-size: .6rem; letter-spacing: .1em; text-transform: uppercase; }
+  .post-head .u { color: var(--cyber); }
+  .post-head .r { margin-left: auto; color: var(--hot); }
+  .post p { margin-top: .75rem; font-size: .8rem; line-height: 1.65; color: rgba(246,244,255,.72); }
+
+  /* ── EMPTY / LOADING ────────────────────────── */
+  .empty, .loading {
+    border: 1px dashed var(--line); border-radius: 15px;
+    padding: 2.2rem 1.5rem; text-align: center;
+    color: var(--muted); font-size: .82rem;
+    background: rgba(255,255,255,.015);
+  }
+  .loading { display: flex; align-items: center; justify-content: center; gap: .6rem; }
+  .spin {
+    width: 16px; height: 16px; border-radius: 50%;
+    border: 2px solid rgba(255,255,255,.15); border-top-color: var(--hot);
+    animation: rot .7s linear infinite;
+  }
+  @keyframes rot { to { transform: rotate(360deg); } }
+
+  /* ── FOOTER ─────────────────────────────────── */
+  footer {
+    border-top: 1px solid var(--line);
+    padding: 2.4rem clamp(1rem, 4vw, 2.6rem) 3rem;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 1rem; flex-wrap: wrap;
+  }
+  .foot-mark { font-family: var(--display); font-size: 2.4rem; line-height: .9; letter-spacing: .04em; }
+  .foot-mark span { color: var(--hot); }
+  .foot-note { font-family: var(--mono); font-size: .6rem; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+
+  /* ── RESPONSIVE ─────────────────────────────── */
+  @media (max-width: 980px) {
+    .hero { grid-template-columns: 1fr; }
+    .panel { transform: none; max-width: 460px; }
+    .stats { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 720px) {
+    .nav-links { display: none; }
+    .row { grid-template-columns: 44px 1fr auto; gap: .6rem; padding: .7rem .8rem; }
+    .mini-bar { width: 90px; }
+    .brand-name { font-size: 1.4rem; }
+    .hero h1::after { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+  <div class="bg"></div>
+  <div class="grain"></div>
+  <div class="scanlines"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <div class="marquee">
+    <div class="marquee-track" id="ticker">
+      <span>anime</span><span>genz</span><span>hiphop</span><span>hiểu uyên</span>
+      <span>vibe check passed</span><span>no skip</span><span>era mới</span><span>flex responsibly</span>
+      <span>anime</span><span>genz</span><span>hiphop</span><span>hiểu uyên</span>
+      <span>vibe check passed</span><span>no skip</span><span>era mới</span><span>flex responsibly</span>
+    </div>
+  </div>
+
+  <nav class="nav">
+    <div class="brand">
+      <div class="brand-logo">🌸</div>
+      <div>
+        <div class="brand-name">HIỂU <em>UYÊN</em></div>
+        <div class="brand-sub">anime · genz · hiphop</div>
+      </div>
+    </div>
+    <div class="nav-links">
+      <a href="#leaderboard" class="active">Charts</a>
+      <a href="#gacha">Gacha</a>
+      <a href="#relationships">Tri Kỷ</a>
+      <a href="#diary">Nhật Ký</a>
+    </div>
+    <div class="live"><i></i> Live</div>
+  </nav>
+
+  <main>
+    <!-- HERO -->
+    <section class="hero" style="padding-top:clamp(2.4rem,6vw,4.5rem)">
+      <div>
+        <span class="chip">✦ era mới đã bắt đầu</span>
+        <h1>
+          <span class="l1">HIỂU</span>
+          <span class="l2">UYÊN</span>
+        </h1>
+        <p class="lead">
+          Bot tri kỷ của server: <b>level</b>, <b>coin</b>, <b>tri kỷ</b>,
+          <b>gacha anime</b>, <b>rap battle</b> và cả một góc để nhắc bạn uống nước.
+          Tất cả vibe, một dashboard.
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#leaderboard">Xem bảng xếp hạng →</a>
+          <a class="btn btn-ghost" href="#gacha">Top collector</a>
+        </div>
+        <div class="sticker-row">
+          <span class="sticker s-hot">no skip</span>
+          <span class="sticker s-cyber">vibe check</span>
+          <span class="sticker s-gold">flex responsibly</span>
+          <span class="sticker s-neon">anime era</span>
+        </div>
+      </div>
+
+      <aside class="panel" aria-label="Tổng quan server">
+        <div class="panel-top"><span>server status</span><b id="panel-status">syncing…</b></div>
+        <div class="big-level" id="hero-level">—<small> /100</small></div>
+        <div class="panel-label">top level in the building</div>
+        <div class="panel-grid">
+          <div class="mini"><b id="hero-members">—</b><span>thành viên</span></div>
+          <div class="mini"><b id="hero-msgs">—</b><span>tin nhắn</span></div>
+          <div class="mini"><b id="hero-cards">—</b><span>thẻ gacha</span></div>
+          <div class="mini"><b id="hero-guilds">—</b><span>servers</span></div>
+        </div>
+        <div class="panel-bar"><i id="hero-bar"></i></div>
+        <div class="panel-note" id="hero-note">// đang tải dữ liệu từ bot…</div>
+      </aside>
+    </section>
+
+    <!-- STATS -->
+    <div class="stats" id="stats">
+      <div class="stat" style="--accent:var(--hot)">
+        <div class="k">members</div><div class="v" id="st-users">—</div><div class="s">đã ghi danh</div>
+      </div>
+      <div class="stat" style="--accent:var(--cyber)">
+        <div class="k">messages</div><div class="v" id="st-msgs">—</div><div class="s">tổng tin nhắn</div>
+      </div>
+      <div class="stat" style="--accent:var(--neon)">
+        <div class="k">ma sói</div><div class="v" id="st-games">—</div><div class="s">trận đã chơi</div>
+      </div>
+      <div class="stat" style="--accent:var(--gold)">
+        <div class="k">gacha</div><div class="v" id="st-cards">—</div><div class="s">thẻ đã mở</div>
+      </div>
+      <div class="stat" style="--accent:var(--lime)">
+        <div class="k">ships</div><div class="v" id="st-ships">—</div><div class="s">lần ghép đôi</div>
+      </div>
+    </div>
+
+    <!-- LEADERBOARD -->
+    <section id="leaderboard">
+      <div class="section-head">
+        <h2 class="section-title">SERVER <span>CHARTS</span></h2>
+        <span class="section-tag">top 15 · auto refresh</span>
+      </div>
+      <div class="tabs" id="lb-tabs">
+        <button class="tab on" data-type="xp">★ xp &amp; level</button>
+        <button class="tab" data-type="coins">💰 coins</button>
+        <button class="tab" data-type="messages">💬 tin nhắn</button>
+        <button class="tab" data-type="health">💧 sức khỏe</button>
+      </div>
+      <div class="rows" id="lb-rows">
+        <div class="loading"><span class="spin"></span> đang tải…</div>
+      </div>
+    </section>
+
+    <!-- GACHA -->
+    <section id="gacha">
+      <div class="section-head">
+        <h2 class="section-title">GACHA <span>COLLECTORS</span></h2>
+        <span class="section-tag">ai giữ bộ sưu tập nặng nhất</span>
+      </div>
+      <div class="cards-grid" id="gacha-grid">
+        <div class="loading"><span class="spin"></span> đang tải…</div>
+      </div>
+    </section>
+
+    <!-- RELATIONSHIPS -->
+    <section id="relationships">
+      <div class="section-head">
+        <h2 class="section-title">TRI <span>KỶ</span></h2>
+        <span class="section-tag">những cặp bền nhất</span>
+      </div>
+      <div class="rel-grid" id="rel-grid">
+        <div class="loading"><span class="spin"></span> đang tải…</div>
+      </div>
+    </section>
+
+    <!-- DIARY -->
+    <section id="diary">
+      <div class="section-head">
+        <h2 class="section-title">NHẬT KÝ <span>SERVER</span></h2>
+        <span class="section-tag">khoảnh khắc được react nhiều</span>
+      </div>
+      <div class="diary-grid" id="diary-grid">
+        <div class="loading"><span class="spin"></span> đang tải…</div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div>
+      <div class="foot-mark">HIỂU <span>UYÊN</span></div>
+      <div class="foot-note">anime · genz · hiphop · một người bạn tri kỷ</div>
+    </div>
+    <div class="foot-note" id="foot-clock">—</div>
+  </footer>
+
+<script>
+// ── helpers ────────────────────────────────────
+const fmt = (n) => {
+  n = Number(n) || 0;
+  if (n >= 1e9) return (n / 1e9).toFixed(1).replace('.0','') + 'B';
+  if (n >= 1e6) return (n / 1e6).toFixed(1).replace('.0','') + 'M';
+  if (n >= 1e3) return (n / 1e3).toFixed(1).replace('.0','') + 'K';
+  return n.toLocaleString('vi-VN');
+};
+const esc = (s='') => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const initial = (name='?') => esc(String(name).trim().charAt(0).toUpperCase() || '?');
+const medal = (i) => ['01','02','03'][i] || String(i + 1).padStart(2, '0');
+const topClass = (i) => i === 0 ? 'top1' : i === 1 ? 'top2' : i === 2 ? 'top3' : '';
+
+async function api(path) {
+  try {
+    const res = await fetch('/api' + path, { headers: { accept: 'application/json' } });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const json = await res.json();
+    return json.data ?? json;
+  } catch (err) {
+    console.warn('api fail', path, err.message);
+    return null;
+  }
+}
+
+// ── stats ──────────────────────────────────────
+async function loadStats() {
+  const data = await api('/stats');
+  const status = document.getElementById('panel-status');
+
+  if (!data) {
+    if (status) status.textContent = 'offline';
+    return;
+  }
+
+  document.getElementById('st-users').textContent  = fmt(data.totalUsers);
+  document.getElementById('st-msgs').textContent   = fmt(data.totalMessages);
+  document.getElementById('st-games').textContent  = fmt(data.totalGames);
+  document.getElementById('st-cards').textContent  = fmt(data.totalCards);
+  document.getElementById('st-ships').textContent  = fmt(data.totalShips);
+
+  document.getElementById('hero-level').innerHTML  = `${data.topLevel || 0}<small> /100</small>`;
+  document.getElementById('hero-members').textContent = fmt(data.totalUsers);
+  document.getElementById('hero-msgs').textContent    = fmt(data.totalMessages);
+  document.getElementById('hero-cards').textContent   = fmt(data.totalCards);
+  document.getElementById('hero-guilds').textContent  = fmt(data.activeGuild || 0);
+
+  const pct = Math.min(100, Math.round(((data.topLevel || 0) / 100) * 100));
+  document.getElementById('hero-bar').style.width = pct + '%';
+  document.getElementById('hero-note').textContent =
+    `// top level ${data.topLevel || 0} · ${fmt(data.totalCards)} thẻ đã mở · bot đang chạy`;
+  if (status) status.textContent = 'online';
+}
+
+// ── leaderboard ────────────────────────────────
+const LB = {
+  xp:       { value: u => `LV ${u.level}`, sub: () => 'level', ratio: u => Math.min((u.level || 0) / 100, 1) },
+  coins:    { value: u => fmt(u.coins), sub: () => 'coins', ratio: u => Math.min((u.coins || 0) / 50000, 1) },
+  messages: { value: u => fmt(u.totalMessages), sub: () => 'messages', ratio: u => Math.min((u.totalMessages || 0) / 5000, 1) },
+  health:   { value: u => `${u.waterStreak}d`, sub: () => 'streak', ratio: u => Math.min((u.waterStreak || 0) / 30, 1) },
+};
+
+let currentType = 'xp';
+
+async function loadLeaderboard(type = 'xp') {
+  currentType = type;
+  const box = document.getElementById('lb-rows');
+  box.innerHTML = '<div class="loading"><span class="spin"></span> đang tải…</div>';
+
+  const data = await api(`/leaderboard?type=${type}&limit=15`);
+  if (!data || !data.length) {
+    box.innerHTML = '<div class="empty">Chưa có dữ liệu. Chat vài câu rồi quay lại nha ✦</div>';
+    return;
+  }
+
+  const meta = LB[type] || LB.xp;
+  box.innerHTML = data.map((u, i) => `
+    <div class="row ${topClass(i)}">
+      <div class="rank">${medal(i)}</div>
+      <div class="who">
+        <div class="ava">${initial(u.username)}</div>
+        <div style="min-width:0">
+          <div class="n">${esc(u.username || 'unknown')}</div>
+          <div class="t">${esc(u.title || 'Tập Sự')}</div>
+        </div>
+      </div>
+      <div class="val">
+        <b>${meta.value(u)}</b>
+        <span>${meta.sub(u)}</span>
+        <div class="mini-bar"><i style="width:${Math.round(meta.ratio(u) * 100)}%"></i></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+document.getElementById('lb-tabs').addEventListener('click', (e) => {
+  const btn = e.target.closest('.tab');
+  if (!btn) return;
+  document.querySelectorAll('#lb-tabs .tab').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  loadLeaderboard(btn.dataset.type);
+});
+
+// ── gacha ──────────────────────────────────────
+async function loadGacha() {
+  const box = document.getElementById('gacha-grid');
+  const data = await api('/gacha/top?limit=8');
+
+  if (!data || !data.length) {
+    box.innerHTML = '<div class="empty">Chưa ai mở thẻ. Gõ <b>/gacha pull</b> trong Discord để mở kèo đầu tiên 🎴</div>';
+    return;
+  }
+
+  const max = Math.max(...data.map(d => d.uniqueCards || 0), 1);
+
+  box.innerHTML = data.map((d, i) => `
+    <div class="gcard">
+      <div class="top">
+        <span class="idx">COLLECTOR #${String(i + 1).padStart(2, '0')}</span>
+        ${d.rareCards > 0 ? '<span class="rarepill">RARE ×' + d.rareCards + '</span>' : ''}
+      </div>
+      <div class="name">${esc(d.username || 'unknown')}</div>
+      <div class="sub">${fmt(d.totalCards)} thẻ · ${d.uniqueCards} bộ sưu tập</div>
+      <div class="count">${d.uniqueCards}<small> UNIQUE</small></div>
+      <div class="mini-bar"><i style="width:${Math.round((d.uniqueCards / max) * 100)}%"></i></div>
+    </div>
+  `).join('');
+}
+
+// ── relationships ──────────────────────────────
+const REL_MAX = { 1: 500, 2: 2000, 3: 5000, 4: 10000, 5: 10000 };
+const REL_NAME = { 1: 'Người Lạ Quen Mặt', 2: 'Người Bạn', 3: 'Bạn Thân', 4: 'Đôi Tri Kỷ', 5: 'Tri Kỷ Tuyệt Vời' };
+
+async function loadRelationships() {
+  const box = document.getElementById('rel-grid');
+  const data = await api('/relationships?limit=8');
+
+  if (!data || !data.length) {
+    box.innerHTML = '<div class="empty">Chưa có cặp nào. Tag nhau nhiều lên, vũ trụ sẽ ghi nhận ✦</div>';
+    return;
+  }
+
+  box.innerHTML = data.map(r => {
+    const max = REL_MAX[r.relationshipLevel] || 10000;
+    const pct = Math.min(100, Math.round((r.lovePoints / max) * 100));
+    return `
+      <div class="rel">
+        <div class="rel-top">
+          <div class="rel-ava">${initial(r.user1Name)}</div>
+          <span class="rel-heart">♥</span>
+          <div class="rel-ava" style="background:linear-gradient(135deg,var(--hot),var(--neon))">${initial(r.user2Name)}</div>
+          <div class="rel-names">${esc(r.user1Name || '?')} &amp; ${esc(r.user2Name || '?')}</div>
+        </div>
+        <div class="rel-pts">${fmt(r.lovePoints)} <small>pts</small></div>
+        <div class="rel-level">${REL_NAME[r.relationshipLevel] || 'Người Lạ Quen Mặt'} · lv ${r.relationshipLevel}</div>
+        <div class="mini-bar"><i style="width:${pct}%"></i></div>
+      </div>`;
+  }).join('');
+}
+
+// ── diary ──────────────────────────────────────
+async function loadDiary() {
+  const box = document.getElementById('diary-grid');
+  const data = await api('/logs?limit=6');
+
+  if (!data || !data.length) {
+    box.innerHTML = '<div class="empty">Chưa có khoảnh khắc nào. Tin nhắn nào có nhiều react sẽ được lưu ở đây 📰</div>';
+    return;
+  }
+
+  box.innerHTML = data.map(log => `
+    <div class="post">
+      <div class="post-head">
+        <span class="u">@${esc(log.username || 'unknown')}</span>
+        <span class="r">♥ ${log.reactionCount || 0}</span>
+      </div>
+      <p>${log.content ? esc(log.content) : '<i>hình ảnh / sticker</i>'}</p>
+    </div>
+  `).join('');
+}
+
+// ── nav active ─────────────────────────────────
+const sections = ['leaderboard', 'gacha', 'relationships', 'diary'];
+window.addEventListener('scroll', () => {
+  const y = window.scrollY + 140;
+  for (const id of sections) {
+    const el = document.getElementById(id);
+    if (!el) continue;
+    if (y >= el.offsetTop && y < el.offsetTop + el.offsetHeight) {
+      document.querySelectorAll('.nav-links a').forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + id));
+    }
+  }
+}, { passive: true });
+
+// ── clock ──────────────────────────────────────
+function tickClock() {
+  const el = document.getElementById('foot-clock');
+  if (el) el.textContent = new Date().toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' }) + ' · live';
+}
+tickClock();
+setInterval(tickClock, 30000);
+
+// ── refresh ────────────────────────────────────
+function refreshAll() {
+  loadStats();
+  loadLeaderboard(currentType);
+  loadGacha();
+  loadRelationships();
+  loadDiary();
+}
+
+refreshAll();
+setInterval(() => { loadStats(); loadLeaderboard(currentType); }, 30000);
+</script>
+</body>
+</html>
